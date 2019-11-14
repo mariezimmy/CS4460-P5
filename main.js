@@ -7,6 +7,7 @@ var targetValue = width;
 var candyPreferenceMap = new Map();
 var candyCalculationmap = new Map();
 
+
 var candies = [
 	"FULL_SIZED_CANDY_BAR",
 	"BUTTERFINGER",
@@ -93,16 +94,28 @@ function updateCandyPreferenceMap(data) {
 	}
 }
 
-
 // create a formatted string of the contents of the array
 function formatCandyPreferenceArray(arr) {
 	var formattedArray = "";
-	for (var i; i < arr.length - 1; i++) {
-		formattedArray.concat(arr[i]);
-		formattedArray.concat(", ");
+	if (arr == undefined) {
+		return formattedArray;
 	}
-	formattedArray.concat(arr[arr.length - 1]);
+	for (var i; i < arr.length - 1; i++) {
+		var candyWord = formatCandyWord(arr[i]);
+		formattedArray = formattedArray.concat(candyWord);
+		formattedArray = formattedArray.concat(", ");
+	}
+	var candyWord = formatCandyWord(arr[arr.length - 1]);
+	formattedArray = formattedArray.concat(candyWord);
 	return formattedArray;
+}
+
+// replace "_" with spaces and only make first letter capitalized
+function formatCandyWord(str) {
+	str = str.replace(/_/g, " ");
+	str = str.toLowerCase();
+	str = str[0].toUpperCase() + str.slice(1);
+	return str;
 }
 
 /*
@@ -221,7 +234,7 @@ d3.csv("candy.csv", function (csv) {
 		handle.attr("cx", x(age));
 		label
 			.attr("x", x(age))
-			.text(String(candyPreferenceMap.get(Math.round(age)))); // need to fix this to format array correctly
+			.text(formatCandyPreferenceArray(candyPreferenceMap.get(Math.round(age))));
 		// filter data set and redraw plot
 		// var newData = dataset.filter(function(d) {
 		//   return d.date < h;
