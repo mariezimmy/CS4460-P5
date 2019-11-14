@@ -100,13 +100,11 @@ function formatCandyPreferenceArray(arr) {
 	if (arr == undefined) {
 		return formattedArray;
 	}
-	for (var i; i < arr.length - 1; i++) {
-		var candyWord = formatCandyWord(arr[i]);
-		formattedArray = formattedArray.concat(candyWord);
+	for (var i = 0; i < arr.length - 1; i++) {
+		formattedArray = formattedArray.concat(formatCandyWord(arr[i]));
 		formattedArray = formattedArray.concat(", ");
 	}
-	var candyWord = formatCandyWord(arr[arr.length - 1]);
-	formattedArray = formattedArray.concat(candyWord);
+	formattedArray = formattedArray.concat(formatCandyWord(arr[arr.length - 1]));
 	return formattedArray;
 }
 
