@@ -57,6 +57,18 @@ var candies = [
 	"YORK_PEPPERMINT_PATTIES"
 ]
 
+/*
+	
+to get the data the way I want, meaning we determine the candy preference for each age,
+we need the following data structures
+	
+first, we need a map with key: age, and value: array of top candy preferences (i.e. NERDS, MNMS, etc.)
+but, to determine the candy preference, we need the following structure
+	
+a map that with key: age and value: another map (key: candy value: #JOY responses)
+from this, we get the value and find the candy with the most joy reponses
+	
+*/
 function updateCandyPreferenceMap(data) {
 	updateCalculationMap(data);
 
@@ -81,6 +93,8 @@ function updateCandyPreferenceMap(data) {
 	}
 }
 
+
+// create a formatted string of the contents of the array
 function formatCandyPreferenceArray(arr) {
 	var formattedArray = "";
 	for (var i; i < arr.length - 1; i++) {
@@ -113,20 +127,8 @@ d3.csv("candy.csv", function (csv) {
 		return +d.AGE > 0;
 	});
 
+	// update the map with k -> age and v -> array of candy preferences
 	updateCandyPreferenceMap(data);
-
-	/*
-	
-	to get the data the way I want, meaning we determine the candy preference for each age,
-	we need the following data structures
-	
-	first, we need a map with key: age, and value: (list?) candy preference (i.e. NERDS, MNMS, etc.)
-	but, to determine the candy preference, we need the following structure
-	
-	a map that with key: age and value: another map (key: candy value: #JOY responses)
-	from this, we get the value and find the candy with the most joy reponses
-	
-	*/
 
 	var minAge = d3.min(data, function (d) { return +d.AGE; });
 	var maxAge = d3.max(data, function (d) { return +d.AGE; });
@@ -219,16 +221,7 @@ d3.csv("candy.csv", function (csv) {
 		handle.attr("cx", x(age));
 		label
 			.attr("x", x(age))
-			.text(String(candyPreferenceMap.get(Math.round(age))))
-		//.text(formatCandyPreferenceArray(candyPreferenceMap.get(Math.round(age))));
-		// .text(function () {
-		// if (candyPreferenceMap.get(Math.round(age) !== undefined)) {
-		// 	return formatCandyPreferenceArray(candyPreferenceMap.get(Math.round(age)));
-		// } else {
-		// 	return "test";
-		// }
-		//});
-
+			.text(String(candyPreferenceMap.get(Math.round(age)))); // need to fix this to format array correctly
 		// filter data set and redraw plot
 		// var newData = dataset.filter(function(d) {
 		//   return d.date < h;
