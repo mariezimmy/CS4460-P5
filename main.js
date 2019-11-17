@@ -3,10 +3,11 @@ var height = 60;
 var data;
 var currentValue = 0;
 var targetValue = width;
+var maxJoyCount;
 
-var candyPreferenceMap = new Map();
-var candyCalculationmap = new Map();
-
+var candyPreferenceMap = new Map(); // key: age value: list of top candy preferences
+var candyCalculationmap = new Map(); // key: age value: map: (key: candy value: joy count)
+var ageAgnosticCandyMap = new Map(); // key: candy value: joy count across all ages
 
 var candies = [
 	"FULL_SIZED_CANDY_BAR",
@@ -59,16 +60,16 @@ var candies = [
 ]
 
 /*
-	
-to get the data the way I want, meaning we determine the candy preference for each age,
-we need the following data structures
-	
+
+to get the data the way I want, meaning we determine the candy preferences for each age,
+we need the following data structures:
+
 first, we need a map with key: age, and value: array of top candy preferences (i.e. NERDS, MNMS, etc.)
 but, to determine the candy preference, we need the following structure
-	
+
 a map that with key: age and value: another map (key: candy value: #JOY responses)
-from this, we get the value and find the candy with the most joy reponses
-	
+from this, we get the value and find the candies with the most joy reponses
+
 */
 function updateCandyPreferenceMap(data) {
 	updateCalculationMap(data);
@@ -94,6 +95,33 @@ function updateCandyPreferenceMap(data) {
 	}
 }
 
+function updateAgeAgnosticCandyMap(data) {
+	updateCalculationMap(data);
+	for (var i = 0; i < data.length; i++) {
+		var candyMap = candyCalculationmap.get(data[i].AGE);
+		for (var candy of candies) {
+			if (ageAgnosticCandyMap.get(candy) == undefined) {
+				ageAgnosticCandyMap.set(candy, candyMap.get(candy));
+			} else {
+				var currJoyCount = ageAgnosticCandyMap.get(candy);
+				currJoyCount += candyMap.get(candy);
+				ageAgnosticCandyMap.set(candy, currJoyCount);
+			}
+		}
+	}
+
+}
+
+function getMaxJoyCount() {
+	var currMaxJoyCount = -1
+	for (var candy of candies) {
+		if (ageAgnosticCandyMap.get(candy) > currMaxJoyCount) {
+			currMaxJoyCount = ageAgnosticCandyMap.get(candy);
+		}
+	}
+	maxJoyCount = currMaxJoyCount;
+}
+
 // create a formatted string of the contents of the array
 function formatCandyPreferenceArray(arr) {
 	var formattedArray = "";
@@ -117,15 +145,15 @@ function formatCandyWord(str) {
 }
 
 /*
-	
-When our dataset contains more items than there are 
+
+When our dataset contains more items than there are
 available DOM elements, the surplus data items are
-stored in a sub set of this selection called the 
+stored in a sub set of this selection called the
 enter selection.
-	
+
 really helpful article on enter, update, exit:
 https://medium.com/@c_behrens/enter-update-exit-6cafc6014c36
-	
+
 */
 
 d3.csv("candy.csv", function (csv) {
@@ -135,11 +163,13 @@ d3.csv("candy.csv", function (csv) {
 
 	data = csv.filter(function (d) {
 		// if there is no age input, forget about the data
-		return +d.AGE > 0;
+		return +d.AGE > 4;
 	});
 
 	// update the map with k -> age and v -> array of candy preferences
 	updateCandyPreferenceMap(data);
+	updateAgeAgnosticCandyMap(data);
+	getMaxJoyCount();
 
 	var minAge = d3.min(data, function (d) { return +d.AGE; });
 	var maxAge = d3.max(data, function (d) { return +d.AGE; });
@@ -172,6 +202,58 @@ d3.csv("candy.csv", function (csv) {
 			}
 		});
 
+	// create bar chart
+	var barChart = d3.select("#main")
+		.append("svg")
+		.attr("width", width * 2)
+		.attr("height", height * 8 + 100)
+		.style("padding-top", "40px")
+		.attr("class", "barChart");
+	var bars = barChart.append("g");
+
+	// scales for bar chart
+	var barX = d3.scaleBand().domain(candies).range([0, width + 600]);
+	var barY = d3.scaleLinear().domain([0, maxJoyCount]).range([height * 8, 0]);
+
+	var barXAxis = d3.axisBottom(barX)
+	var barYAxis = d3.axisLeft(barY);
+
+	bars.append("g")
+		.attr("class", "x axis")
+		.attr("transform", "translate(60, " + ((height) * 8) + ")")
+		.call(barXAxis)
+		.selectAll("text")
+		.attr("y", 0)
+		.attr("x", 9)
+		.attr("dy", ".35em")
+		.attr("transform", "rotate(90)")
+		.style("text-anchor", "start");;
+	bars.append("g")
+		.attr("transform", "translate(60, 0)")
+		.attr("class", "y axis")
+		.attr("id", "yAxis")
+		.call(barYAxis);
+
+	// colors for bars - fix later to be related to candy color
+	var colors = ["#dcffcc", "#9fdfcd", "baabda", "#d79abc"];
+
+	// add bars in an overview: this means 
+	// before you hit play we the joy count for all candies across all ages
+	for (var i = 0; i < candies.length; i++) {
+		bars.append("g")
+			.append("rect")
+			.attr("id", "bar" + i)
+			.style("fill", function () {
+				return colors[i % colors.length];
+			})
+			.attr("x", function () {
+				return 63 + barX(candies[i]);
+			})
+			.attr("width", ((width + 600) / (candies.length)) - 6)
+			.attr("y", function () { return barY(ageAgnosticCandyMap.get(candies[i])); })
+			.attr("height", function () { return (height * 8) - barY(ageAgnosticCandyMap.get(candies[i])); });
+	}
+
 	// age scale
 	var x = d3.scaleLinear()
 		.domain([minAge, maxAge])
@@ -196,7 +278,7 @@ d3.csv("candy.csv", function (csv) {
 			.on("start.interrupt", function () { slider.interrupt(); })
 			.on("start drag", function () {
 				currentValue = d3.event.x;
-				update(Math.round(x.invert(currentValue)));
+				update(Math.round(x.invert(currentValue)), data);
 			})
 		);
 
@@ -205,7 +287,7 @@ d3.csv("candy.csv", function (csv) {
 		.attr("class", "ticks")
 		.attr("transform", "translate(0," + 18 + ")")
 		.selectAll("text")
-		.data(x.ticks(20))
+		.data(x.ticks(10))
 		.enter()
 		.append("text")
 		.attr("x", x)
@@ -218,26 +300,55 @@ d3.csv("candy.csv", function (csv) {
 		.attr("class", "handle")
 		.attr("r", 9);
 
-	// label where the slider is on the line	
+	// label where the slider is on the line
 	var label = slider.append("text")
 		.attr("class", "label")
 		.attr("text-anchor", "middle")
-		.text(function (d) { return 0; })
+		.text("")
 		.attr("transform", "translate(0," + (-25) + ")")
 
 	function update(age) {
-		console.log(candyPreferenceMap.get(Math.round(age)));
-
 		// update position and text of label according to slider scale
 		handle.attr("cx", x(age));
 		label
 			.attr("x", x(age))
 			.text(formatCandyPreferenceArray(candyPreferenceMap.get(Math.round(age))));
-		// filter data set and redraw plot
-		// var newData = dataset.filter(function(d) {
-		//   return d.date < h;
-		// })
-		// drawPlot(newData);
+
+		// change y scale now that we're looking at individual ages
+		barY = d3.scaleLinear().domain([0, 105]).range([height * 8, 0]);
+		barYAxis = d3.axisLeft(barY);
+		bars.select("#yAxis")
+			.attr("transform", "translate(60, 0)")
+			.attr('class', 'y axis')
+			.call(barYAxis);
+
+
+		// update bars in bar chart
+		// this is a detail view of joy count of all candies PER age
+		for (var i = 0; i < candies.length; i++) {
+			bars.select("#bar" + i)
+				.style("fill", function () {
+					return colors[i % colors.length];
+				})
+				.attr("x", function () {
+					return 63 + barX(candies[i]);
+				})
+				.attr("width", ((width + 600) / (candies.length)) - 6)
+				.attr("y", function () {
+					if (candyCalculationmap.get(Math.round(age)) == undefined) {
+						return 0;
+					} else {
+						return barY(candyCalculationmap.get(Math.round(age)).get(candies[i]));
+					}
+				})
+				.attr("height", function () {
+					if (candyCalculationmap.get(Math.round(age)) == undefined) {
+						return 0;
+					} else {
+						return (height * 8) - barY(candyCalculationmap.get(Math.round(age)).get(candies[i]));
+					}
+				});
+		}
 	}
 
 	function step() {
@@ -249,14 +360,13 @@ d3.csv("candy.csv", function (csv) {
 			playButton.text("Play");
 		}
 	}
-
 });
 
 
 /*
 consider referencing this code for auto-play story telling vis:
 https://bl.ocks.org/officeofjane/47d2b0bfeecfcb41d2212d06d095c763
-	
+
 NON-CANDY DATA ATTRIBUTES IN CSV
 --------------------------------
 GOING_OUT
@@ -264,7 +374,7 @@ GENDER
 AGE
 COUNTRY
 STATE
-	
+
 CANDY ATTRIBUTES IN CSV
 -----------------------
 note: candy is ranked by each individul as "JOY," "MEH," or "DESPAIR."
@@ -319,19 +429,17 @@ TRAIL_MIX
 TWIX
 WHATCHAMACALLIT_BARS
 YORK_PEPPERMINT_PATTIES
-	
+
 */
-
-
 
 
 /*
 I know this is incredibly disgusting, but I don't know how to access data[i].SOMECANDY
 programmatically - I tried to do some type of enum thingy, but it didn't consider SOMECANDY
 a valid type :(
-	
+
 I know there should be a way to fix this, but for now, we're keeping this miserable code :(
-	
+
  */
 
 function updateCalculationMap(data) {
@@ -531,6 +639,11 @@ function updateCalculationMap(data) {
 				currCandyMap.set("SOURPATCH_KIDS", 1);
 			} else {
 				currCandyMap.set("SOURPATCH_KIDS", 0);
+			}
+			if (data[i].STARBURST == "JOY") {
+				currCandyMap.set("STARBURST", 1);
+			} else {
+				currCandyMap.set("STARBURST", 0);
 			}
 			if (data[i].SWEDISH_FISH == "JOY") {
 				currCandyMap.set("SWEDISH_FISH", 1);
@@ -770,6 +883,11 @@ function updateCalculationMap(data) {
 				var currJoyCount = currCandyMap.get("SOURPATCH_KIDS");
 				currJoyCount++;
 				currCandyMap.set("SOURPATCH_KIDS", currJoyCount);
+			}
+			if (data[i].STARBURST == "JOY") {
+				var currJoyCount = currCandyMap.get("STARBURST");
+				currJoyCount++;
+				currCandyMap.set("STARBURST", currJoyCount);
 			}
 			if (data[i].SWEDISH_FISH == "JOY") {
 				var currJoyCount = currCandyMap.get("SWEDISH_FISH");
