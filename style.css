@@ -2,6 +2,12 @@ body {
   font: 12px sans-serif;
 }
 
+.candiesDetail {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
 .button-g {
   justify-content: left;
   padding-left: 1%;
