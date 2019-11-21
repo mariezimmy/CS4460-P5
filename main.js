@@ -10,53 +10,53 @@ var candyCalculationmap = new Map(); // key: age value: map: (key: candy value: 
 var ageAgnosticCandyMap = new Map(); // key: candy value: joy count across all ages
 
 var candies = [
-	"FULL_SIZED_CANDY_BAR",
-	"BUTTERFINGER",
-	"CANDY_CORN",
-	"CHICLETS",
-	"DOTS",
-	"FUZZY_PEACHES",
-	"GOOD_N_PLENTY",
-	"GUMMY_BEARS",
-	"HEALTHY_FRUIT",
-	"HEATH_BAR",
-	"HERSHEYS_DARK",
-	"HERSHEYS_MILK",
-	"HERSHEYS_KISSES",
-	"JOLLY_RANCHER",
-	"JUNIOR_MINTS",
-	"KITKAT",
-	"LAFFYTAFFY",
-	"LEMONHEADS",
-	"LICORICE",
-	"BLACK_LICORICE",
-	"LOLLIPOPS",
-	"MIKE_AND_IKE",
-	"MILK_DUDS",
-	"MILKYWAY",
-	"MNMS",
-	"PEANUT_MNMS",
-	"MINT_KISSES",
-	"MR_GOODBAR",
-	"NERDS",
-	"NESTLE_CRUNCH",
-	"PEEPS",
-	"PIXY_STIX",
-	"REESES_PB_CUPS",
-	"REESES_PIECES",
-	"ROLOS",
-	"SKITTLES",
-	"SNICKERS",
-	"SOURPATCH_KIDS",
-	"STARBURST",
-	"SWEDISH_FISH",
-	"TIC_TACS",
-	"THREE_MUSKETEERS",
-	"TOBLERONE",
-	"TRAIL_MIX",
-	"TWIX",
-	"WHATCHAMACALLIT_BARS",
-	"YORK_PEPPERMINT_PATTIES"
+	"Full Sized Candy Bar",
+	"Butterfinger",
+	"Candy Corn",
+	"Chiclets",
+	"Dots",
+	"Fuzzy Peaches",
+	"Good N Plenty",
+	"Gummy Bears",
+	"Healthy Fruit",
+	"Heath Bar",
+	"Hersheys Dark",
+	"Hersheys Milk",
+	"Hersheys Kisses",
+	"Jolly Rancher",
+	"Junior Mints",
+	"KitKat",
+	"Laffy Taffy",
+	"Lemonheads",
+	"Licorice",
+	"Black Licorice",
+	"Lollipops",
+	"Mike and Ike",
+	"Milk Duds",
+	"Milky Way",
+	"M&Ms",
+	"Peanut M&Ms",
+	"Mint Kisses",
+	"Mr Goodbar",
+	"Nerds",
+	"Nestle Crunch",
+	"Peeps",
+	"Pixy Stix",
+	"Reeses PB Cups",
+	"Reeses Pieces",
+	"Rolos",
+	"Skittles",
+	"Snickers",
+	"Sour Patch Kids",
+	"Starburst",
+	"Swedish Fish",
+	"Tic Tacs",
+	"Three Musketeers",
+	"Toblerone",
+	"Trail Mix",
+	"Twix",
+	"Whatchamacallit Bars",
+	"York Peppermint Patties"
 ]
 
 /*
@@ -141,9 +141,6 @@ function formatCandyWord(str) {
 	if (str == undefined) {
 		return "";
 	}
-	str = str.replace(/_/g, " ");
-	str = str.toLowerCase();
-	str = str[0].toUpperCase() + str.slice(1);
 	return str;
 }
 
@@ -178,12 +175,21 @@ d3.csv("candy.csv", function (csv) {
 	var maxAge = d3.max(data, function (d) { return +d.AGE; });
 	currentValue = minAge;
 
+
+	// create bar chart
+	var barChart = d3.select("#main")
+		.append("svg")
+		.attr("width", width * 2)
+		.attr("height", height * 8 + 100)
+		.attr("class", "barChart");
+	var bars = barChart.append("g");
+
 	// initial svg
 	var svg = d3.select("#main")
-		.append("svg")
-		.attr("id", "svg")
-		.attr("width", width + 600)
-		.attr("height", height + 105);
+	.append("svg")
+	.attr("id", "svg")
+	.attr("width", width + 600)
+	.attr("height", height + 105);
 
 	// detail text svg
 
@@ -206,15 +212,6 @@ d3.csv("candy.csv", function (csv) {
 				button.text("Pause");
 			}
 		});
-
-	// create bar chart
-	var barChart = d3.select("#main")
-		.append("svg")
-		.attr("width", width * 2)
-		.attr("height", height * 8 + 100)
-		.style("padding-top", "40px")
-		.attr("class", "barChart");
-	var bars = barChart.append("g");
 
 	// scales for bar chart
 	var barX = d3.scaleBand().domain(candies).range([0, width + 600]);
@@ -359,6 +356,7 @@ d3.csv("candy.csv", function (csv) {
 		// this is a detail view of joy count of all candies PER age
 		for (var i = 0; i < candies.length; i++) {
 			bars.select("#bar" + i)
+				.transition()
 				.style("fill", function () {
 					return colors[i % colors.length];
 				})
@@ -368,7 +366,7 @@ d3.csv("candy.csv", function (csv) {
 				.attr("width", ((width + 600) / (candies.length)) - 6)
 				.attr("y", function () {
 					if (candyCalculationmap.get(Math.round(age)) == undefined) {
-						return 0;
+						return 480;
 					} else {
 						return barY(candyCalculationmap.get(Math.round(age)).get(candies[i]));
 					}
@@ -557,240 +555,240 @@ function updateCalculationMap(data) {
 
 			if (data[i].FULL_SIZED_CANDY_BAR == "JOY") {
 				// set joy count to 1
-				currCandyMap.set("FULL_SIZED_CANDY_BAR", 1);
+				currCandyMap.set("Full Sized Candy Bar", 1);
 			} else {
 				// set joy count to 0 just to initialize this k-v pair
-				currCandyMap.set("FULL_SIZED_CANDY_BAR", 0);
+				currCandyMap.set("Full Sized Candy Bar", 0);
 			}
 			if (data[i].BUTTERFINGER == "JOY") {
-				currCandyMap.set("BUTTERFINGER", 1);
+				currCandyMap.set("Butterfinger", 1);
 			} else {
-				currCandyMap.set("BUTTERFINGER", 0);
+				currCandyMap.set("Butterfinger", 0);
 			}
 			if (data[i].CANDY_CORN == "JOY") {
-				currCandyMap.set("CANDY_CORN", 1);
+				currCandyMap.set("Candy Corn", 1);
 			} else {
-				currCandyMap.set("CANDY_CORN", 0);
+				currCandyMap.set("Candy Corn", 0);
 			}
 			if (data[i].CHICLETS == "JOY") {
-				currCandyMap.set("CHICLETS", 1);
+				currCandyMap.set("Chiclets", 1);
 			} else {
-				currCandyMap.set("CHICLETS", 0);
+				currCandyMap.set("Chiclets", 0);
 			}
 			if (data[i].DOTS == "JOY") {
-				currCandyMap.set("DOTS", 1);
+				currCandyMap.set("Dots", 1);
 			} else {
-				currCandyMap.set("DOTS", 0);
+				currCandyMap.set("Dots", 0);
 			}
 			if (data[i].FUZZY_PEACHES == "JOY") {
-				currCandyMap.set("FUZZY_PEACHES", 1);
+				currCandyMap.set("Fuzzy Peaches", 1);
 			} else {
-				currCandyMap.set("FUZZY_PEACHES", 0);
+				currCandyMap.set("Fuzzy Peaches", 0);
 			}
 			if (data[i].GOOD_N_PLENTY == "JOY") {
-				currCandyMap.set("GOOD_N_PLENTY", 1);
+				currCandyMap.set("Good N Plenty", 1);
 			} else {
-				currCandyMap.set("GOOD_N_PLENTY", 0);
+				currCandyMap.set("Good N Plenty", 0);
 			}
 			if (data[i].GUMMY_BEARS == "JOY") {
-				currCandyMap.set("GUMMY_BEARS", 1);
+				currCandyMap.set("Gummy Bears", 1);
 			} else {
-				currCandyMap.set("GUMMY_BEARS", 0);
+				currCandyMap.set("Gummy Bears", 0);
 			}
 			if (data[i].HEALTHY_FRUIT == "JOY") {
-				currCandyMap.set("HEALTHY_FRUIT", 1);
+				currCandyMap.set("Healthy Fruit", 1);
 			} else {
-				currCandyMap.set("HEALTHY_FRUIT", 0);
+				currCandyMap.set("Healthy Fruit", 0);
 			}
 			if (data[i].HEATH_BAR == "JOY") {
-				currCandyMap.set("HEATH_BAR", 1);
+				currCandyMap.set("Heath Bar", 1);
 			} else {
-				currCandyMap.set("HEATH_BAR", 0);
+				currCandyMap.set("Heath Bar", 0);
 			}
 			if (data[i].HERSHEYS_DARK == "JOY") {
-				currCandyMap.set("HERSHEYS_DARK", 1);
+				currCandyMap.set("Hersheys Dark", 1);
 			} else {
-				currCandyMap.set("HERSHEYS_DARK", 0);
+				currCandyMap.set("Hersheys Dark", 0);
 			}
 			if (data[i].HERSHEYS_MILK == "JOY") {
-				currCandyMap.set("HERSHEYS_MILK", 1);
+				currCandyMap.set("Hersheys Milk", 1);
 			} else {
-				currCandyMap.set("HERSHEYS_MILK", 0);
+				currCandyMap.set("Hersheys Milk", 0);
 			}
 			if (data[i].HERSHEYS_KISSES == "JOY") {
-				currCandyMap.set("HERSHEYS_KISSES", 1);
+				currCandyMap.set("Hersheys Kisses", 1);
 			} else {
-				currCandyMap.set("HERSHEYS_KISSES", 0);
+				currCandyMap.set("Hersheys Kisses", 0);
 			}
 			if (data[i].JOLLY_RANCHER == "JOY") {
-				currCandyMap.set("JOLLY_RANCHER", 1);
+				currCandyMap.set("Jolly Rancher", 1);
 			} else {
-				currCandyMap.set("JOLLY_RANCHER", 0);
+				currCandyMap.set("Jolly Rancher", 0);
 			}
 			if (data[i].JUNIOR_MINTS == "JOY") {
-				currCandyMap.set("JUNIOR_MINTS", 1);
+				currCandyMap.set("Junior Mints", 1);
 			} else {
-				currCandyMap.set("JUNIOR_MINTS", 0);
+				currCandyMap.set("Junior Mints", 0);
 			}
 			if (data[i].KITKAT == "JOY") {
-				currCandyMap.set("KITKAT", 1);
+				currCandyMap.set("KitKat", 1);
 			} else {
-				currCandyMap.set("KITKAT", 0);
+				currCandyMap.set("KitKat", 0);
 			}
 			if (data[i].LAFFYTAFFY == "JOY") {
-				currCandyMap.set("LAFFYTAFFY", 1);
+				currCandyMap.set("Laffy Taffy", 1);
 			} else {
-				currCandyMap.set("LAFFYTAFFY", 0);
+				currCandyMap.set("Laffy Taffy", 0);
 			}
 			if (data[i].LEMONHEADS == "JOY") {
-				currCandyMap.set("LEMONHEADS", 1);
+				currCandyMap.set("Lemonheads", 1);
 			} else {
-				currCandyMap.set("LEMONHEADS", 0);
+				currCandyMap.set("Lemonheads", 0);
 			}
 			if (data[i].LICORICE == "JOY") {
-				currCandyMap.set("LICORICE", 1);
+				currCandyMap.set("Licorice", 1);
 			} else {
-				currCandyMap.set("LICORICE", 0);
+				currCandyMap.set("Licorice", 0);
 			}
 			if (data[i].BLACK_LICORICE == "JOY") {
-				currCandyMap.set("BLACK_LICORICE", 1);
+				currCandyMap.set("Black Licorice", 1);
 			} else {
-				currCandyMap.set("BLACK_LICORICE", 0);
+				currCandyMap.set("Black Licorice", 0);
 			}
 			if (data[i].LOLLIPOPS == "JOY") {
-				currCandyMap.set("LOLLIPOPS", 1);
+				currCandyMap.set("Lollipops", 1);
 			} else {
-				currCandyMap.set("LOLLIPOPS", 0);
+				currCandyMap.set("Lollipops", 0);
 			}
 			if (data[i].MIKE_AND_IKE == "JOY") {
-				currCandyMap.set("MIKE_AND_IKE", 1);
+				currCandyMap.set("Mike and Ike", 1);
 			} else {
-				currCandyMap.set("MIKE_AND_IKE", 0);
+				currCandyMap.set("Mike and Ike", 0);
 			}
 			if (data[i].MILK_DUDS == "JOY") {
-				currCandyMap.set("MILK_DUDS", 1);
+				currCandyMap.set("Milk Duds", 1);
 			} else {
-				currCandyMap.set("MILK_DUDS", 0);
+				currCandyMap.set("Milk Duds", 0);
 			}
 			if (data[i].MILKYWAY == "JOY") {
-				currCandyMap.set("MILKYWAY", 1);
+				currCandyMap.set("Milky Way", 1);
 			} else {
-				currCandyMap.set("MILKYWAY", 0);
+				currCandyMap.set("Milky Way", 0);
 			}
 			if (data[i].MNMS == "JOY") {
-				currCandyMap.set("MNMS", 1);
+				currCandyMap.set("M&Ms", 1);
 			} else {
-				currCandyMap.set("MNMS", 0);
+				currCandyMap.set("M&Ms", 0);
 			}
 			if (data[i].PEANUT_MNMS == "JOY") {
-				currCandyMap.set("PEANUT_MNMS", 1);
+				currCandyMap.set("Peanut M&Ms", 1);
 			} else {
-				currCandyMap.set("PEANUT_MNMS", 0);
+				currCandyMap.set("Peanut M&Ms", 0);
 			}
 			if (data[i].MINT_KISSES == "JOY") {
-				currCandyMap.set("MINT_KISSES", 1);
+				currCandyMap.set("Mint Kisses", 1);
 			} else {
-				currCandyMap.set("MINT_KISSES", 0);
+				currCandyMap.set("Mint Kisses", 0);
 			}
 			if (data[i].MR_GOODBAR == "JOY") {
-				currCandyMap.set("MR_GOODBAR", 1);
+				currCandyMap.set("Mr Goodbar", 1);
 			} else {
-				currCandyMap.set("MR_GOODBAR", 0);
+				currCandyMap.set("Mr Goodbar", 0);
 			}
 			if (data[i].NERDS == "JOY") {
-				currCandyMap.set("NERDS", 1);
+				currCandyMap.set("Nerds", 1);
 			} else {
-				currCandyMap.set("NERDS", 0);
+				currCandyMap.set("Nerds", 0);
 			}
 			if (data[i].NESTLE_CRUNCH == "JOY") {
-				currCandyMap.set("NESTLE_CRUNCH", 1);
+				currCandyMap.set("Nestle Crunch", 1);
 			} else {
-				currCandyMap.set("NESTLE_CRUNCH", 0);
+				currCandyMap.set("Nestle Crunch", 0);
 			}
 			if (data[i].PEEPS == "JOY") {
-				currCandyMap.set("PEEPS", 1);
+				currCandyMap.set("Peeps", 1);
 			} else {
-				currCandyMap.set("PEEPS", 0);
+				currCandyMap.set("Peeps", 0);
 			}
 			if (data[i].PIXY_STIX == "JOY") {
-				currCandyMap.set("PIXY_STIX", 1);
+				currCandyMap.set("Pixy Stix", 1);
 			} else {
-				currCandyMap.set("PIXY_STIX", 0);
+				currCandyMap.set("Pixy Stix", 0);
 			}
 			if (data[i].REESES_PB_CUPS == "JOY") {
-				currCandyMap.set("REESES_PB_CUPS", 1);
+				currCandyMap.set("Reeses PB Cups", 1);
 			} else {
-				currCandyMap.set("REESES_PB_CUPS", 0);
+				currCandyMap.set("Reeses PB Cups", 0);
 			}
 			if (data[i].REESES_PIECES == "JOY") {
-				currCandyMap.set("REESES_PIECES", 1);
+				currCandyMap.set("Reeses Pieces", 1);
 			} else {
-				currCandyMap.set("REESES_PIECES", 0);
+				currCandyMap.set("Reeses Pieces", 0);
 			}
 			if (data[i].ROLOS == "JOY") {
-				currCandyMap.set("ROLOS", 1);
+				currCandyMap.set("Rolos", 1);
 			} else {
-				currCandyMap.set("ROLOS", 0);
+				currCandyMap.set("Rolos", 0);
 			}
 			if (data[i].SKITTLES == "JOY") {
-				currCandyMap.set("SKITTLES", 1);
+				currCandyMap.set("Skittles", 1);
 			} else {
-				currCandyMap.set("SKITTLES", 0);
+				currCandyMap.set("Skittles", 0);
 			}
 			if (data[i].SNICKERS == "JOY") {
-				currCandyMap.set("SNICKERS", 1);
+				currCandyMap.set("Snickers", 1);
 			} else {
-				currCandyMap.set("SNICKERS", 0);
+				currCandyMap.set("Snickers", 0);
 			}
 			if (data[i].SOURPATCH_KIDS == "JOY") {
-				currCandyMap.set("SOURPATCH_KIDS", 1);
+				currCandyMap.set("Sour Patch Kids", 1);
 			} else {
-				currCandyMap.set("SOURPATCH_KIDS", 0);
+				currCandyMap.set("Sour Patch Kids", 0);
 			}
 			if (data[i].STARBURST == "JOY") {
-				currCandyMap.set("STARBURST", 1);
+				currCandyMap.set("Starburst", 1);
 			} else {
-				currCandyMap.set("STARBURST", 0);
+				currCandyMap.set("Starburst", 0);
 			}
 			if (data[i].SWEDISH_FISH == "JOY") {
-				currCandyMap.set("SWEDISH_FISH", 1);
+				currCandyMap.set("Swedish Fish", 1);
 			} else {
-				currCandyMap.set("SWEDISH_FISH", 0);
+				currCandyMap.set("Swedish Fish", 0);
 			}
 			if (data[i].TIC_TACS == "JOY") {
-				currCandyMap.set("TIC_TACS", 1);
+				currCandyMap.set("Tic Tacs", 1);
 			} else {
-				currCandyMap.set("TIC_TACS", 0);
+				currCandyMap.set("Tic Tacs", 0);
 			}
 			if (data[i].THREE_MUSKETEERS == "JOY") {
-				currCandyMap.set("THREE_MUSKETEERS", 1);
+				currCandyMap.set("Three Musketeers", 1);
 			} else {
-				currCandyMap.set("THREE_MUSKETEERS", 0);
+				currCandyMap.set("Three Musketeers", 0);
 			}
 			if (data[i].TOBLERONE == "JOY") {
-				currCandyMap.set("TOBLERONE", 1);
+				currCandyMap.set("Toblerone", 1);
 			} else {
-				currCandyMap.set("TOBLERONE", 0);
+				currCandyMap.set("Toblerone", 0);
 			}
 			if (data[i].TRAIL_MIX == "JOY") {
-				currCandyMap.set("TRAIL_MIX", 1);
+				currCandyMap.set("Trail Mix", 1);
 			} else {
-				currCandyMap.set("TRAIL_MIX", 0);
+				currCandyMap.set("Trail Mix", 0);
 			}
 			if (data[i].TWIX == "JOY") {
-				currCandyMap.set("TWIX", 1);
+				currCandyMap.set("Twix", 1);
 			} else {
-				currCandyMap.set("TWIX", 0);
+				currCandyMap.set("Twix", 0);
 			}
 			if (data[i].WHATCHAMACALLIT_BARS == "JOY") {
-				currCandyMap.set("WHATCHAMACALLIT_BARS", 1);
+				currCandyMap.set("Whatchamacallit Bars", 1);
 			} else {
-				currCandyMap.set("WHATCHAMACALLIT_BARS", 0);
+				currCandyMap.set("Whatchamacallit Bars", 0);
 			}
 			if (data[i].YORK_PEPPERMINT_PATTIES == "JOY") {
-				currCandyMap.set("YORK_PEPPERMINT_PATTIES", 1);
+				currCandyMap.set("York Peppermint Patties", 1);
 			} else {
-				currCandyMap.set("YORK_PEPPERMINT_PATTIES", 0);
+				currCandyMap.set("York Peppermint Patties", 0);
 			}
 
 			// update candy calculation map to now have age and new currCandyMap
@@ -799,242 +797,242 @@ function updateCalculationMap(data) {
 			var currCandyMap = candyCalculationmap.get(data[i].AGE);
 			if (data[i].FULL_SIZED_CANDY_BAR == "JOY") {
 				// get the current joy count
-				var currJoyCount = currCandyMap.get("FULL_SIZED_CANDY_BAR");
+				var currJoyCount = currCandyMap.get("Full Sized Candy Bar");
 				// increment it
 				currJoyCount++;
 				// update the candy joy count;
-				currCandyMap.set("FULL_SIZED_CANDY_BAR", currJoyCount);
+				currCandyMap.set("Full Sized Candy Bar", currJoyCount);
 			}
 
 			if (data[i].BUTTERFINGER == "JOY") {
-				var currJoyCount = currCandyMap.get("BUTTERFINGER");
+				var currJoyCount = currCandyMap.get("Butterfinger");
 				currJoyCount++;
-				currCandyMap.set("BUTTERFINGER", currJoyCount);
+				currCandyMap.set("Butterfinger", currJoyCount);
 			}
 			if (data[i].CANDY_CORN == "JOY") {
-				var currJoyCount = currCandyMap.get("CANDY_CORN");
+				var currJoyCount = currCandyMap.get("Candy Corn");
 				currJoyCount++;
-				currCandyMap.set("CANDY_CORN", currJoyCount);
+				currCandyMap.set("Candy Corn", currJoyCount);
 			}
 			if (data[i].CHICLETS == "JOY") {
-				var currJoyCount = currCandyMap.get("CHICLETS");
+				var currJoyCount = currCandyMap.get("Chiclets");
 				currJoyCount++;
-				currCandyMap.set("CHICLETS", currJoyCount);
+				currCandyMap.set("Chiclets", currJoyCount);
 			}
 			if (data[i].DOTS == "JOY") {
-				var currJoyCount = currCandyMap.get("DOTS");
+				var currJoyCount = currCandyMap.get("Dots");
 				currJoyCount++;
-				currCandyMap.set("DOTS", currJoyCount);
+				currCandyMap.set("Dots", currJoyCount);
 			}
 			if (data[i].FUZZY_PEACHES == "JOY") {
-				var currJoyCount = currCandyMap.get("FUZZY_PEACHES");
+				var currJoyCount = currCandyMap.get("Fuzzy Peaches");
 				currJoyCount++;
-				currCandyMap.set("FUZZY_PEACHES", currJoyCount);
+				currCandyMap.set("Fuzzy Peaches", currJoyCount);
 			}
 			if (data[i].GOOD_N_PLENTY == "JOY") {
-				var currJoyCount = currCandyMap.get("GOOD_N_PLENTY");
+				var currJoyCount = currCandyMap.get("Good N Plenty");
 				currJoyCount++;
-				currCandyMap.set("GOOD_N_PLENTY", currJoyCount);
+				currCandyMap.set("Good N Plenty", currJoyCount);
 			}
 			if (data[i].GUMMY_BEARS == "JOY") {
-				var currJoyCount = currCandyMap.get("GUMMY_BEARS");
+				var currJoyCount = currCandyMap.get("Gummy Bears");
 				currJoyCount++;
-				currCandyMap.set("GUMMY_BEARS", currJoyCount);
+				currCandyMap.set("Gummy Bears", currJoyCount);
 			}
 			if (data[i].HEALTHY_FRUIT == "JOY") {
-				var currJoyCount = currCandyMap.get("HEALTHY_FRUIT");
+				var currJoyCount = currCandyMap.get("Healthy Fruit");
 				currJoyCount++;
-				currCandyMap.set("HEALTHY_FRUIT", currJoyCount);
+				currCandyMap.set("Healthy Fruit", currJoyCount);
 			}
 			if (data[i].HEATH_BAR == "JOY") {
-				var currJoyCount = currCandyMap.get("HEATH_BAR");
+				var currJoyCount = currCandyMap.get("Heath Bar");
 				currJoyCount++;
-				currCandyMap.set("HEATH_BAR", currJoyCount);
+				currCandyMap.set("Heath Bar", currJoyCount);
 			}
 			if (data[i].HERSHEYS_DARK == "JOY") {
-				var currJoyCount = currCandyMap.get("HERSHEYS_DARK");
+				var currJoyCount = currCandyMap.get("Hersheys Dark");
 				currJoyCount++;
-				currCandyMap.set("HERSHEYS_DARK", currJoyCount);
+				currCandyMap.set("Hersheys Dark", currJoyCount);
 			}
 			if (data[i].HERSHEYS_MILK == "JOY") {
-				var currJoyCount = currCandyMap.get("HERSHEYS_MILK");
+				var currJoyCount = currCandyMap.get("Hersheys Milk");
 				currJoyCount++;
-				currCandyMap.set("HERSHEYS_MILK", currJoyCount);
+				currCandyMap.set("Hersheys Milk", currJoyCount);
 			}
 			if (data[i].HERSHEYS_KISSES == "JOY") {
-				var currJoyCount = currCandyMap.get("HERSHEYS_KISSES");
+				var currJoyCount = currCandyMap.get("Hersheys Kisses");
 				currJoyCount++;
-				currCandyMap.set("HERSHEYS_KISSES", currJoyCount);
+				currCandyMap.set("Hersheys Kisses", currJoyCount);
 			}
 			if (data[i].JOLLY_RANCHER == "JOY") {
-				var currJoyCount = currCandyMap.get("JOLLY_RANCHER");
+				var currJoyCount = currCandyMap.get("Jolly Rancher");
 				currJoyCount++;
-				currCandyMap.set("JOLLY_RANCHER", currJoyCount);
+				currCandyMap.set("Jolly Rancher", currJoyCount);
 			}
 			if (data[i].JUNIOR_MINTS == "JOY") {
-				var currJoyCount = currCandyMap.get("JUNIOR_MINTS");
+				var currJoyCount = currCandyMap.get("Junior Mints");
 				currJoyCount++;
-				currCandyMap.set("JUNIOR_MINTS", currJoyCount);
+				currCandyMap.set("Junior Mints", currJoyCount);
 			}
 			if (data[i].KITKAT == "JOY") {
-				var currJoyCount = currCandyMap.get("KITKAT");
+				var currJoyCount = currCandyMap.get("KitKat");
 				currJoyCount++;
-				currCandyMap.set("KITKAT", currJoyCount);
+				currCandyMap.set("KitKat", currJoyCount);
 			}
 			if (data[i].LAFFYTAFFY == "JOY") {
-				var currJoyCount = currCandyMap.get("LAFFYTAFFY");
+				var currJoyCount = currCandyMap.get("Laffy Taffy");
 				currJoyCount++;
-				currCandyMap.set("LAFFYTAFFY", currJoyCount);
+				currCandyMap.set("Laffy Taffy", currJoyCount);
 			}
 			if (data[i].LEMONHEADS == "JOY") {
-				var currJoyCount = currCandyMap.get("LEMONHEADS");
+				var currJoyCount = currCandyMap.get("Lemonheads");
 				currJoyCount++;
-				currCandyMap.set("LEMONHEADS", currJoyCount);
+				currCandyMap.set("Lemonheads", currJoyCount);
 			}
 			if (data[i].LICORICE == "JOY") {
-				var currJoyCount = currCandyMap.get("LICORICE");
+				var currJoyCount = currCandyMap.get("Licorice");
 				currJoyCount++;
-				currCandyMap.set("LICORICE", currJoyCount);
+				currCandyMap.set("Licorice", currJoyCount);
 			}
 			if (data[i].BLACK_LICORICE == "JOY") {
-				var currJoyCount = currCandyMap.get("BLACK_LICORICE");
+				var currJoyCount = currCandyMap.get("Black Licorice");
 				currJoyCount++;
-				currCandyMap.set("BLACK_LICORICE", currJoyCount);
+				currCandyMap.set("Black Licorice", currJoyCount);
 			}
 			if (data[i].LOLLIPOPS == "JOY") {
-				var currJoyCount = currCandyMap.get("LOLLIPOPS");
+				var currJoyCount = currCandyMap.get("Lollipops");
 				currJoyCount++;
-				currCandyMap.set("LOLLIPOPS", currJoyCount);
+				currCandyMap.set("Lollipops", currJoyCount);
 			}
 			if (data[i].MIKE_AND_IKE == "JOY") {
-				var currJoyCount = currCandyMap.get("MIKE_AND_IKE");
+				var currJoyCount = currCandyMap.get("Mike and Ike");
 				currJoyCount++;
-				currCandyMap.set("MIKE_AND_IKE", currJoyCount);
+				currCandyMap.set("Mike and Ike", currJoyCount);
 			}
 			if (data[i].MILK_DUDS == "JOY") {
-				var currJoyCount = currCandyMap.get("MILK_DUDS");
+				var currJoyCount = currCandyMap.get("Milk Duds");
 				currJoyCount++;
-				currCandyMap.set("MILK_DUDS", currJoyCount);
+				currCandyMap.set("Milk Duds", currJoyCount);
 			}
 			if (data[i].MILKYWAY == "JOY") {
-				var currJoyCount = currCandyMap.get("MILKYWAY");
+				var currJoyCount = currCandyMap.get("Milky Way");
 				currJoyCount++;
-				currCandyMap.set("MILKYWAY", currJoyCount);
+				currCandyMap.set("Milky Way", currJoyCount);
 			}
 			if (data[i].MNMS == "JOY") {
-				var currJoyCount = currCandyMap.get("MNMS");
+				var currJoyCount = currCandyMap.get("M&Ms");
 				currJoyCount++;
-				currCandyMap.set("MNMS", currJoyCount);
+				currCandyMap.set("M&Ms", currJoyCount);
 			}
 			if (data[i].PEANUT_MNMS == "JOY") {
-				var currJoyCount = currCandyMap.get("PEANUT_MNMS");
+				var currJoyCount = currCandyMap.get("Peanut M&Ms");
 				currJoyCount++;
-				currCandyMap.set("PEANUT_MNMS", currJoyCount);
+				currCandyMap.set("Peanut M&Ms", currJoyCount);
 			}
 			if (data[i].MINT_KISSES == "JOY") {
-				var currJoyCount = currCandyMap.get("MINT_KISSES");
+				var currJoyCount = currCandyMap.get("Mint Kisses");
 				currJoyCount++;
-				currCandyMap.set("MINT_KISSES", currJoyCount);
+				currCandyMap.set("Mint Kisses", currJoyCount);
 			}
 			if (data[i].MR_GOODBAR == "JOY") {
-				var currJoyCount = currCandyMap.get("MR_GOODBAR");
+				var currJoyCount = currCandyMap.get("Mr Goodbar");
 				currJoyCount++;
-				currCandyMap.set("MR_GOODBAR", currJoyCount);
+				currCandyMap.set("Mr Goodbar", currJoyCount);
 			}
 			if (data[i].NERDS == "JOY") {
-				var currJoyCount = currCandyMap.get("NERDS");
+				var currJoyCount = currCandyMap.get("Nerds");
 				currJoyCount++;
-				currCandyMap.set("NERDS", currJoyCount);
+				currCandyMap.set("Nerds", currJoyCount);
 			}
 			if (data[i].NESTLE_CRUNCH == "JOY") {
-				var currJoyCount = currCandyMap.get("NESTLE_CRUNCH");
+				var currJoyCount = currCandyMap.get("Nestle Crunch");
 				currJoyCount++;
-				currCandyMap.set("NESTLE_CRUNCH", currJoyCount);
+				currCandyMap.set("Nestle Crunch", currJoyCount);
 			}
 			if (data[i].PEEPS == "JOY") {
-				var currJoyCount = currCandyMap.get("PEEPS");
+				var currJoyCount = currCandyMap.get("Peeps");
 				currJoyCount++;
-				currCandyMap.set("PEEPS", currJoyCount);
+				currCandyMap.set("Peeps", currJoyCount);
 			}
 			if (data[i].PIXY_STIX == "JOY") {
-				var currJoyCount = currCandyMap.get("PIXY_STIX");
+				var currJoyCount = currCandyMap.get("Pixy Stix");
 				currJoyCount++;
-				currCandyMap.set("PIXY_STIX", currJoyCount);
+				currCandyMap.set("Pixy Stix", currJoyCount);
 			}
 			if (data[i].REESES_PB_CUPS == "JOY") {
-				var currJoyCount = currCandyMap.get("REESES_PB_CUPS");
+				var currJoyCount = currCandyMap.get("Reeses PB Cups");
 				currJoyCount++;
-				currCandyMap.set("REESES_PB_CUPS", currJoyCount);
+				currCandyMap.set("Reeses PB Cups", currJoyCount);
 			}
 			if (data[i].REESES_PIECES == "JOY") {
-				var currJoyCount = currCandyMap.get("REESES_PIECES");
+				var currJoyCount = currCandyMap.get("Reeses Pieces");
 				currJoyCount++;
-				currCandyMap.set("REESES_PIECES", currJoyCount);
+				currCandyMap.set("Reeses Pieces", currJoyCount);
 			}
 			if (data[i].ROLOS == "JOY") {
-				var currJoyCount = currCandyMap.get("ROLOS");
+				var currJoyCount = currCandyMap.get("Rolos");
 				currJoyCount++;
-				currCandyMap.set("ROLOS", currJoyCount);
+				currCandyMap.set("Rolos", currJoyCount);
 			}
 			if (data[i].SKITTLES == "JOY") {
-				var currJoyCount = currCandyMap.get("SKITTLES");
+				var currJoyCount = currCandyMap.get("Skittles");
 				currJoyCount++;
-				currCandyMap.set("SKITTLES", currJoyCount);
+				currCandyMap.set("Skittles", currJoyCount);
 			}
 			if (data[i].SNICKERS == "JOY") {
-				var currJoyCount = currCandyMap.get("SNICKERS");
+				var currJoyCount = currCandyMap.get("Snickers");
 				currJoyCount++;
-				currCandyMap.set("SNICKERS", currJoyCount);
+				currCandyMap.set("Snickers", currJoyCount);
 			}
 			if (data[i].SOURPATCH_KIDS == "JOY") {
-				var currJoyCount = currCandyMap.get("SOURPATCH_KIDS");
+				var currJoyCount = currCandyMap.get("Sour Patch Kids");
 				currJoyCount++;
-				currCandyMap.set("SOURPATCH_KIDS", currJoyCount);
+				currCandyMap.set("Sour Patch Kids", currJoyCount);
 			}
 			if (data[i].STARBURST == "JOY") {
-				var currJoyCount = currCandyMap.get("STARBURST");
+				var currJoyCount = currCandyMap.get("Starburst");
 				currJoyCount++;
-				currCandyMap.set("STARBURST", currJoyCount);
+				currCandyMap.set("Starburst", currJoyCount);
 			}
 			if (data[i].SWEDISH_FISH == "JOY") {
-				var currJoyCount = currCandyMap.get("SWEDISH_FISH");
+				var currJoyCount = currCandyMap.get("Swedish Fish");
 				currJoyCount++;
-				currCandyMap.set("SWEDISH_FISH", currJoyCount);
+				currCandyMap.set("Swedish Fish", currJoyCount);
 			}
 			if (data[i].TIC_TACS == "JOY") {
-				var currJoyCount = currCandyMap.get("TIC_TACS");
+				var currJoyCount = currCandyMap.get("Tic Tacs");
 				currJoyCount++;
-				currCandyMap.set("TIC_TACS", currJoyCount);
+				currCandyMap.set("Tic Tacs", currJoyCount);
 			}
 			if (data[i].THREE_MUSKETEERS == "JOY") {
-				var currJoyCount = currCandyMap.get("THREE_MUSKETEERS");
+				var currJoyCount = currCandyMap.get("Three Musketeers");
 				currJoyCount++;
-				currCandyMap.set("THREE_MUSKETEERS", currJoyCount);
+				currCandyMap.set("Three Musketeers", currJoyCount);
 			}
 			if (data[i].TOBLERONE == "JOY") {
-				var currJoyCount = currCandyMap.get("TOBLERONE");
+				var currJoyCount = currCandyMap.get("Toblerone");
 				currJoyCount++;
-				currCandyMap.set("TOBLERONE", currJoyCount);
+				currCandyMap.set("Toblerone", currJoyCount);
 			}
 			if (data[i].TRAIL_MIX == "JOY") {
-				var currJoyCount = currCandyMap.get("TRAIL_MIX");
+				var currJoyCount = currCandyMap.get("Trail Mix");
 				currJoyCount++;
-				currCandyMap.set("TRAIL_MIX", currJoyCount);
+				currCandyMap.set("Trail Mix", currJoyCount);
 			}
 			if (data[i].TWIX == "JOY") {
-				var currJoyCount = currCandyMap.get("TWIX");
+				var currJoyCount = currCandyMap.get("Twix");
 				currJoyCount++;
-				currCandyMap.set("TWIX", currJoyCount);
+				currCandyMap.set("Twix", currJoyCount);
 			}
 			if (data[i].WHATCHAMACALLIT_BARS == "JOY") {
-				var currJoyCount = currCandyMap.get("WHATCHAMACALLIT_BARS");
+				var currJoyCount = currCandyMap.get("Whatchamacallit Bars");
 				currJoyCount++;
-				currCandyMap.set("WHATCHAMACALLIT_BARS", currJoyCount);
+				currCandyMap.set("Whatchamacallit Bars", currJoyCount);
 			}
 			if (data[i].YORK_PEPPERMINT_PATTIES == "JOY") {
-				var currJoyCount = currCandyMap.get("YORK_PEPPERMINT_PATTIES");
+				var currJoyCount = currCandyMap.get("York Peppermint Patties");
 				currJoyCount++;
-				currCandyMap.set("YORK_PEPPERMINT_PATTIES", currJoyCount);
+				currCandyMap.set("York Peppermint Patties", currJoyCount);
 			}
 			candyCalculationmap.set(data[i].AGE, currCandyMap);
 		}
