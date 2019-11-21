@@ -208,7 +208,7 @@ d3.csv("candy.csv", function (csv) {
 				clearInterval(timer);
 				button.text("Play");
 			} else {
-				timer = setInterval(step, 400);
+				timer = setInterval(step, 800);
 				button.text("Pause");
 			}
 		});
@@ -237,7 +237,7 @@ d3.csv("candy.csv", function (csv) {
 		.call(barYAxis);
 
 	// colors for bars - fix later to be related to candy color
-	var colors = ["#dcffcc", "#9fdfcd", "baabda", "#d79abc"];
+	var colors = ["#d7191c","#fdae61","#ffffbf","#a6d96a","#1a9641"];
 
 	// add bars in an overview: this means 
 	// before you hit play we the joy count for all candies across all ages
@@ -246,7 +246,7 @@ d3.csv("candy.csv", function (csv) {
 			.append("rect")
 			.attr("id", "bar" + i)
 			.style("fill", function () {
-				return colors[i % colors.length];
+				return colors[Math.trunc(ageAgnosticCandyMap.get(candies[i]) / 10000 / 2)];
 			})
 			.attr("x", function () {
 				return 63 + barX(candies[i]);
@@ -358,7 +358,23 @@ d3.csv("candy.csv", function (csv) {
 			bars.select("#bar" + i)
 				.transition()
 				.style("fill", function () {
-					return colors[i % colors.length];
+					if (candyArr != null) {
+						var topCandy = candyArr[0];
+						var maxValue = candyCalculationmap.get(Math.round(age)).get(topCandy);
+						var spread = maxValue / 5;
+						if (candyCalculationmap.get(Math.round(age)).get(candies[i]) < spread) {
+							return colors[0];
+						} else if (candyCalculationmap.get(Math.round(age)).get(candies[i]) < spread * 2) {
+							return colors[1];
+						} else if (candyCalculationmap.get(Math.round(age)).get(candies[i]) < spread * 3) {
+							return colors[2];
+						}  else if (candyCalculationmap.get(Math.round(age)).get(candies[i]) < maxValue) {
+							return colors[3];
+						} else {
+							return colors[4];
+						}
+					} 
+					return colors[0];
 				})
 				.attr("x", function () {
 					return 63 + barX(candies[i]);
