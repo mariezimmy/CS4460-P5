@@ -1,3 +1,8 @@
+@font-face {
+  font-family: "SegoeUI Light";
+  src: url("segoeuil.ttf");
+}
+
 body {
   font: 12px sans-serif;
   padding: 0;
@@ -5,7 +10,7 @@ body {
 }
 
 .dropdown {
-  font-family: 'Segoe UI';
+  font-family: 'SegoeUI Light';
   font-weight: lighter;
   font-size: 14px;
   border-radius: 3px;
@@ -25,7 +30,7 @@ body {
   width: 70px;
   cursor: pointer;
   height: 30px;
-  font-family: 'Segoe UI';
+  font-family: 'SegoeUI Light';
   font-weight: lighter;
 }
 
@@ -73,7 +78,7 @@ body {
 }
 
 .label {
-  font-family: 'Segoe UI';
+  font-family: 'SegoeUI Light';
   font-weight: bold;
   font-size: 15px;
 }
@@ -82,7 +87,7 @@ body {
   overflow-wrap: break-word;
   word-wrap: break-word;
   hyphens: auto;
-  font-family: 'Segoe UI';
+  font-family: 'SegoeUI Light';
   font-weight: bold;
   font-size: 15px;
 }
@@ -92,7 +97,7 @@ body {
 }
 
 .vis-title {
-  font-family: 'Segoe UI';
+  font-family: 'SegoeUI Light';
   font-weight: lighter;
   text-align: center;
   font-size: 33px;
