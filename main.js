@@ -4,10 +4,22 @@ var data;
 var currentValue = 0;
 var targetValue = width;
 var maxJoyCount;
+var maxMehCount;
+var maxDespairCount;
 
-var candyPreferenceMap = new Map(); // key: age value: list of top candy preferences
-var candyCalculationmap = new Map(); // key: age value: map: (key: candy value: joy count)
-var ageAgnosticCandyMap = new Map(); // key: candy value: joy count across all ages
+var selected = "Joy"; // start showing joy data first
+
+var joyCandyMap = new Map(); // key: age value: list of most joyous candy preferences
+var joyCandyCalculationMap = new Map(); // key: age value: map: (key: candy value: joy count)
+var joyAgeAgnosticCandyMap = new Map(); // key: candy value: joy count across all ages
+
+var mehCandyMap = new Map(); // key: age value: list of most meh candy preferences
+var mehCandyCalculationMap = new Map(); // key: age value: map: (key: candy value: meh count)
+var mehAgeAgnosticCandyMap = new Map(); // key: candy value: meh count across all ages
+
+var despairCandyMap = new Map(); // key: age value: list of most despair candy preferences
+var despairCandyCalculationMap = new Map(); // key: age value: map: (key: candy value: despair count)
+var despairAgeAgnosticCandyMap = new Map(); // key: candy value: despair count across all ages
 
 var candies = [
 	"Full Sized Candy Bar",
@@ -71,55 +83,61 @@ a map that with key: age and value: another map (key: candy value: #JOY response
 from this, we get the value and find the candies with the most joy reponses
 
 */
-function updateCandyPreferenceMap(data) {
-	updateCandyPreferenceCalculationMap(data, candyCalculationmap, "JOY");
+function updateCandyPreferenceMap(data, map, calculationMap, preference) {
+	updateCandyPreferenceCalculationMap(data, calculationMap, preference);
 
 	for (var i = 0; i < data.length; i++) {
-		var candyMap = candyCalculationmap.get(data[i].AGE);
-		var maxJoyCount = -1;
+		var candyMap = calculationMap.get(data[i].AGE);
+		var maxPreferenceCount = -1;
 		var candyPreference = [];
 		// find max joy count per age
 		for (var candy of candies) {
-			if (candyMap.get(candy) > maxJoyCount) {
-				maxJoyCount = candyMap.get(candy);
+			if (candyMap.get(candy) > maxPreferenceCount) {
+				maxPreferenceCount = candyMap.get(candy);
 			}
 		}
 		// get array of all candies that have that max joy count
 		for (var candy of candies) {
-			if (candyMap.get(candy) == maxJoyCount) {
+			if (candyMap.get(candy) == maxPreferenceCount) {
 				candyPreference.push(candy);
 			}
 		}
 		// set map k: age, v: array of candy preferences
-		candyPreferenceMap.set(data[i].AGE, candyPreference);
+		map.set(data[i].AGE, candyPreference);
 	}
 }
 
-function updateAgeAgnosticCandyMap(data) {
-	updateCandyPreferenceCalculationMap(data, candyCalculationmap, "JOY");
+function updateAgeAgnosticCandyMap(data, ageAgnosticMap, calculationMap, preference) {
+	updateCandyPreferenceCalculationMap(data, calculationMap, preference);
 	for (var i = 0; i < data.length; i++) {
-		var candyMap = candyCalculationmap.get(data[i].AGE);
+		var candyMap = calculationMap.get(data[i].AGE);
 		for (var candy of candies) {
-			if (ageAgnosticCandyMap.get(candy) == undefined) {
-				ageAgnosticCandyMap.set(candy, candyMap.get(candy));
+			if (ageAgnosticMap.get(candy) == undefined) {
+				ageAgnosticMap.set(candy, candyMap.get(candy));
 			} else {
-				var currJoyCount = ageAgnosticCandyMap.get(candy);
-				currJoyCount += candyMap.get(candy);
-				ageAgnosticCandyMap.set(candy, currJoyCount);
+				var currPreferenceCount = ageAgnosticMap.get(candy);
+				currPreferenceCount += candyMap.get(candy);
+				ageAgnosticMap.set(candy, currPreferenceCount);
 			}
 		}
 	}
 
 }
 
-function getMaxJoyCount() {
-	var currMaxJoyCount = -1
+function getMaxPreferenceCount(ageAgnosticMap, preference) {
+	var currMaxPreferenceCount = -1
 	for (var candy of candies) {
-		if (ageAgnosticCandyMap.get(candy) > currMaxJoyCount) {
-			currMaxJoyCount = ageAgnosticCandyMap.get(candy);
+		if (ageAgnosticMap.get(candy) > currMaxPreferenceCount) {
+			currMaxPreferenceCount = ageAgnosticMap.get(candy);
 		}
 	}
-	maxJoyCount = currMaxJoyCount;
+	if (preference == "JOY") {
+		maxJoyCount = currMaxPreferenceCount
+	} else if (preference == "MEH") {
+		maxMehCount = currMaxPreferenceCount;
+	} else {
+		maxDespairCount = currMaxPreferenceCount;
+	}
 }
 
 // create a formatted string of the contents of the array
@@ -166,15 +184,24 @@ d3.csv("candy.csv", function (csv) {
 		return +d.AGE > 4;
 	});
 
-	// update the map with k -> age and v -> array of candy preferences
-	updateCandyPreferenceMap(data);
-	updateAgeAgnosticCandyMap(data);
-	getMaxJoyCount();
+	// update the joy map with k -> age and v -> array of candy preferences
+	updateCandyPreferenceMap(data, joyCandyMap, joyCandyCalculationMap, "JOY");
+	updateAgeAgnosticCandyMap(data, joyAgeAgnosticCandyMap, joyCandyCalculationMap, "JOY");
+	getMaxPreferenceCount(joyAgeAgnosticCandyMap, "JOY");
+
+	// update the meh map with k -> age and v -> array of candy preferences
+	updateCandyPreferenceMap(data, mehCandyMap, mehCandyCalculationMap, "MEH");
+	updateAgeAgnosticCandyMap(data, mehAgeAgnosticCandyMap, mehCandyCalculationMap, "MEH");
+	getMaxPreferenceCount(mehAgeAgnosticCandyMap, "MEH");
+
+	// update the despair map with k -> age and v -> array of candy preferences
+	updateCandyPreferenceMap(data, despairCandyMap, despairCandyCalculationMap, "DESPAIR");
+	updateAgeAgnosticCandyMap(data, despairAgeAgnosticCandyMap, despairCandyCalculationMap, "DESPAIR");
+	getMaxPreferenceCount(despairAgeAgnosticCandyMap, "DESPAIR");
 
 	var minAge = d3.min(data, function (d) { return +d.AGE; });
 	var maxAge = d3.max(data, function (d) { return +d.AGE; });
 	currentValue = minAge;
-		
 	// create bar chart
 	var barChart = d3.select("#main")
 		.append("svg")
@@ -223,6 +250,7 @@ d3.csv("candy.csv", function (csv) {
 	// dropdown select
 	belowGraph
 		.append("select")
+		.attr("id", "selectDropdown")
 		.attr("class", "dropdown")
 		.selectAll("option")
 		.data(["Joy", "Meh", "Despair"])
@@ -231,6 +259,7 @@ d3.csv("candy.csv", function (csv) {
 		.attr("value", function (d) {
 			return d;
 		});
+	console.log(d3.select("#selectDropdown").node().value)
 
 	// scales for bar chart
 	var barX = d3.scaleBand().domain(candies).range([0, width + 600]);
@@ -256,7 +285,9 @@ d3.csv("candy.csv", function (csv) {
 		.call(barYAxis);
 
 	// colors for bars - fix later to be related to candy color
-	var colors = ["#d7191c", "#fdae61", "#ffffbf", "#a6d96a", "#1a9641"];
+	var joyColors = ["#a0d5a0", "#92cf92", "#77c377", "#5cb75c", "#377c37"];
+	var mehColors = ["#ffc862", "#ffba3b", "#ffac14", "#ff9000", "#ff7b00"];
+	var despairColors = ["#ff8a8a", "#ff6262", "#ff3b3b", "#ff0000", "#c40000"];
 
 	// add bars in an overview: this means 
 	// before you hit play we the joy count for all candies across all ages
@@ -265,15 +296,15 @@ d3.csv("candy.csv", function (csv) {
 			.append("rect")
 			.attr("id", "bar" + i)
 			.style("fill", function () {
-				return colors[Math.trunc(ageAgnosticCandyMap.get(candies[i]) / 10000 / 2)];
+				return joyColors[Math.trunc(joyAgeAgnosticCandyMap.get(candies[i]) / 10000 / 2)];
 			})
 			.attr("x", function () {
 				return 63 + barX(candies[i]);
 			})
 			.attr("width", ((width + 600) / (candies.length)) - 6)
-			.attr("y", function () { return barY(ageAgnosticCandyMap.get(candies[i])); })
+			.attr("y", function () { return barY(joyAgeAgnosticCandyMap.get(candies[i])); })
 			.attr("height", function () {
-				return (height * 8) - barY(ageAgnosticCandyMap.get(candies[i]));
+				return (height * 8) - barY(joyAgeAgnosticCandyMap.get(candies[i]));
 			});
 	}
 
@@ -357,12 +388,34 @@ d3.csv("candy.csv", function (csv) {
 	function update(age) {
 		// update position and of handle according to slider scale
 		handle.attr("cx", x(age));
+		var map;
+		var calculationMap;
+		var colors;
+		var candyText;
+		var preference = d3.select("#selectDropdown").node().value;
+
+		if (preference == "Joy") {
+			map = joyCandyMap;
+			calculationMap = joyCandyCalculationMap;
+			colors = joyColors;
+			candyText = "Favorite Candies: "
+		} else if (preference == "Meh") {
+			map = mehCandyMap;
+			calculationMap = mehCandyCalculationMap;
+			colors = mehColors;
+			candyText = "Meh-est Candies: "
+		} else {
+			map = despairCandyMap;
+			calculationMap = despairCandyCalculationMap;
+			colors = despairColors;
+			candyText = "Least Favorite Candies: "
+		}
 
 		// update detail on demand values for age and favorite candies
 		ageDetail.text("Age: " + Math.round(age))
 		updateCandyDetailX(age);
-		var candyArr = candyPreferenceMap.get(Math.round(age));
-		updateCandyText(candyArr);
+		var candyArr = map.get(Math.round(age));
+		updateCandyText(candyArr, candyText);
 
 		// change y scale now that we're looking at individual ages
 		barY = d3.scaleLinear().domain([0, 105]).range([height * 8, 0]);
@@ -380,15 +433,15 @@ d3.csv("candy.csv", function (csv) {
 				.style("fill", function () {
 					if (candyArr != null) {
 						var topCandy = candyArr[0];
-						var maxValue = candyCalculationmap.get(Math.round(age)).get(topCandy);
+						var maxValue = calculationMap.get(Math.round(age)).get(topCandy);
 						var spread = maxValue / 5;
-						if (candyCalculationmap.get(Math.round(age)).get(candies[i]) < spread) {
+						if (calculationMap.get(Math.round(age)).get(candies[i]) < spread) {
 							return colors[0];
-						} else if (candyCalculationmap.get(Math.round(age)).get(candies[i]) < spread * 2) {
+						} else if (calculationMap.get(Math.round(age)).get(candies[i]) < spread * 2) {
 							return colors[1];
-						} else if (candyCalculationmap.get(Math.round(age)).get(candies[i]) < spread * 3) {
+						} else if (calculationMap.get(Math.round(age)).get(candies[i]) < spread * 3) {
 							return colors[2];
-						} else if (candyCalculationmap.get(Math.round(age)).get(candies[i]) < maxValue) {
+						} else if (calculationMap.get(Math.round(age)).get(candies[i]) < maxValue) {
 							return colors[3];
 						} else {
 							return colors[4];
@@ -401,17 +454,17 @@ d3.csv("candy.csv", function (csv) {
 				})
 				.attr("width", ((width + 600) / (candies.length)) - 6)
 				.attr("y", function () {
-					if (candyCalculationmap.get(Math.round(age)) == undefined) {
+					if (calculationMap.get(Math.round(age)) == undefined) {
 						return 480;
 					} else {
-						return barY(candyCalculationmap.get(Math.round(age)).get(candies[i]));
+						return barY(calculationMap.get(Math.round(age)).get(candies[i]));
 					}
 				})
 				.attr("height", function () {
-					if (candyCalculationmap.get(Math.round(age)) == undefined) {
+					if (calculationMap.get(Math.round(age)) == undefined) {
 						return 0;
 					} else {
-						return (height * 8) - barY(candyCalculationmap.get(Math.round(age)).get(candies[i]));
+						return (height * 8) - barY(calculationMap.get(Math.round(age)).get(candies[i]));
 					}
 				})
 		}
@@ -427,30 +480,30 @@ d3.csv("candy.csv", function (csv) {
 		}
 	}
 
-	function updateCandyText(arr) {
+	function updateCandyText(arr, candyText) {
 		if (arr == undefined) {
-			candiesDetail.text("Favorite Candies:");
+			candiesDetail.text(candyText);
 			candiesDetail1.text("");
 			candiesDetail2.text("");
 			candiesDetail3.text("");
 		} else {
 			var arrSlices = arr.length / 4;
 			if (arrSlices < 1) {
-				candiesDetail.text("Favorite Candies: "
+				candiesDetail.text(candyText
 					+ formatCandyPreferenceArray(arr));
 				candiesDetail1.text("");
 				candiesDetail2.text("");
 				candiesDetail3.text("");
 
 			} else if (arrSlices < 2) {
-				candiesDetail.text("Favorite Candies: "
+				candiesDetail.text(candyText
 					+ formatCandyPreferenceArray(arr.slice(0, 4)));
 				candiesDetail1.text(formatCandyPreferenceArray(arr.slice(4, arr.length)));
 				candiesDetail2.text("");
 				candiesDetail3.text("");
 
 			} else if (arrSlices < 3) {
-				candiesDetail.text("Favorite Candies: "
+				candiesDetail.text(candyText
 					+ formatCandyPreferenceArray(arr.slice(0, 4)));
 				candiesDetail1.text(formatCandyPreferenceArray(arr.slice(4, 8)));
 				candiesDetail2.text(formatCandyPreferenceArray(arr.slice(8, arr.length)));
@@ -461,7 +514,7 @@ d3.csv("candy.csv", function (csv) {
 				if (arr.length > 16) {
 					endSliceIndex = 16;
 				}
-				candiesDetail.text("Favorite Candies: "
+				candiesDetail.text(candyText
 					+ formatCandyPreferenceArray(arr.slice(0, 4)));
 				candiesDetail1.text(formatCandyPreferenceArray(arr.slice(4, 8)));
 				candiesDetail2.text(formatCandyPreferenceArray(arr.slice(8, 12)));
