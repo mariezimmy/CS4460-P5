@@ -285,9 +285,9 @@ d3.csv("candy.csv", function (csv) {
 		.call(barYAxis);
 
 	// colors for bars - fix later to be related to candy color
-	var joyColors = ["#a0d5a0", "#92cf92", "#77c377", "#5cb75c", "#377c37"];
-	var mehColors = ["#ffc862", "#ffba3b", "#ffac14", "#ff9000", "#ff7b00"];
-	var despairColors = ["#ff8a8a", "#ff6262", "#ff3b3b", "#ff0000", "#c40000"];
+	var joyColors = ["#edf8e9","#bae4b3","#74c476","#31a354","#006d2c"];
+	var mehColors = ["#ffffd4","#fed98e","#fe9929","#d95f0e","#993404"];
+	var despairColors = ["#fee5d9","#fcae91","#fb6a4a","#de2d26","#a50f15"];
 
 	// add bars in an overview: this means 
 	// before you hit play we the joy count for all candies across all ages
