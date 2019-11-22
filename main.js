@@ -174,8 +174,7 @@ d3.csv("candy.csv", function (csv) {
 	var minAge = d3.min(data, function (d) { return +d.AGE; });
 	var maxAge = d3.max(data, function (d) { return +d.AGE; });
 	currentValue = minAge;
-
-
+		
 	// create bar chart
 	var barChart = d3.select("#main")
 		.append("svg")
@@ -194,8 +193,7 @@ d3.csv("candy.csv", function (csv) {
 	// create p to hold both play button and dropdown select
 	var belowGraph = d3.select("#main")
 		.append("p")
-		.style("padding-left", "2%")
-		.style("padding-bottom", "2%")
+		.attr("class", "button-container")
 		.attr("width", width)
 		.attr("height", height)
 
@@ -337,22 +335,22 @@ d3.csv("candy.csv", function (csv) {
 		.append("text")
 		.text("Favorite Candies:")
 		.attr("width", "100px")
-		.attr("transform", "translate(838," + (15) + ")")
+		.attr("transform", "translate(833," + (15) + ")")
 		.attr("class", "candiesDetail")
 	var candiesDetail1 = slider
 		.append("text")
 		.text("")
-		.attr("transform", "translate(838," + (30) + ")")
+		.attr("transform", "translate(833," + (30) + ")")
 		.attr("class", "candiesDetail")
 	var candiesDetail2 = slider
 		.append("text")
 		.text("")
-		.attr("transform", "translate(838," + (45) + ")")
+		.attr("transform", "translate(833," + (45) + ")")
 		.attr("class", "candiesDetail")
 	var candiesDetail3 = slider
 		.append("text")
 		.text("")
-		.attr("transform", "translate(838," + (60) + ")")
+		.attr("transform", "translate(833," + (60) + ")")
 		.attr("class", "candiesDetail")
 
 
@@ -475,28 +473,28 @@ d3.csv("candy.csv", function (csv) {
 	function updateCandyDetailX(age) {
 		candiesDetail.attr("transform", function () {
 			if (Math.round(age) > 9) {
-				return "translate(829," + (15) + ")";
+				return "translate(824," + (15) + ")";
 			} else {
 				return "translate(833," + (15) + ")";
 			}
 		})
 		candiesDetail1.attr("transform", function () {
 			if (Math.round(age) > 9) {
-				return "translate(829," + (30) + ")";
+				return "translate(824," + (30) + ")";
 			} else {
 				return "translate(833," + (30) + ")";
 			}
 		})
 		candiesDetail2.attr("transform", function () {
 			if (Math.round(age) > 9) {
-				return "translate(829," + (45) + ")";
+				return "translate(824," + (45) + ")";
 			} else {
 				return "translate(833," + (45) + ")";
 			}
 		})
 		candiesDetail3.attr("transform", function () {
 			if (Math.round(age) > 9) {
-				return "translate(829," + (60) + ")";
+				return "translate(824," + (60) + ")";
 			} else {
 				return "translate(833," + (60) + ")";
 			}
