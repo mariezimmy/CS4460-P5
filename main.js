@@ -248,6 +248,7 @@ d3.csv("candy.csv", function (csv) {
 		.attr("class", "play-button")
 		.on("click", function () {
 			playPressed = 1;
+			d3.select("#visTitle").text("Reactions to Candies by Age")
 			var button = d3.select(this);
 			if (button.text() == "Pause") {
 				clearInterval(timer);
