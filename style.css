@@ -8,13 +8,11 @@ body {
   hyphens: auto;
 }
 
-.button-g {
-  justify-content: left;
-  padding-left: 1%;
-}
+.dropdown:focus {
+  outline: none;
+} 
 
 .play-button {
-  justify-content: left;
   background: #a7a5a5;
   border-radius: 3px;
   border: none;
@@ -28,6 +26,10 @@ body {
 .play-button:hover {
   background-color: #696969;
 }    
+
+.play-button:focus {
+  outline: none;
+} 
 
 .ticks {
   font-size: 10px;

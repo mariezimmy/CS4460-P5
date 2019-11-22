@@ -186,20 +186,20 @@ d3.csv("candy.csv", function (csv) {
 
 	// initial svg
 	var svg = d3.select("#main")
-	.append("svg")
-	.attr("id", "svg")
-	.attr("width", width + 600)
-	.attr("height", height + 105);
+		.append("svg")
+		.attr("id", "svg")
+		.attr("width", width + 600)
+		.attr("height", height + 105);
 
-	// detail text svg
-
-	// button to play the slider
-	var playButton = d3.select("#main")
+	// create p to hold both play button and dropdown select
+	var belowGraph = d3.select("#main")
 		.append("p")
+		.style("padding-left", "2%")
 		.attr("width", width)
 		.attr("height", height)
-		.attr("class", "button-g")
-		.append("button")
+
+	// play button for slider
+	belowGraph.append("button")
 		.text("Play")
 		.attr("class", "play-button")
 		.on("click", function () {
@@ -211,6 +211,26 @@ d3.csv("candy.csv", function (csv) {
 				timer = setInterval(step, 800);
 				button.text("Pause");
 			}
+		});
+
+	/*
+	for whatever reason, css would not work with me to create a space
+	between the play button and the dropdown select, so I added
+	this empty, wide svg
+	*/
+	belowGraph.append("svg").attr("width", 20)
+		.attr("height", 1);
+
+	// dropdown select
+	belowGraph
+		.append("select")
+		.attr("class", "dropdown")
+		.selectAll("option")
+		.data(["Joy", "Meh", "Despair"])
+		.enter().append("option")
+		.text(function (d) { return d; })
+		.attr("value", function (d) {
+			return d;
 		});
 
 	// scales for bar chart
@@ -237,7 +257,7 @@ d3.csv("candy.csv", function (csv) {
 		.call(barYAxis);
 
 	// colors for bars - fix later to be related to candy color
-	var colors = ["#d7191c","#fdae61","#ffffbf","#a6d96a","#1a9641"];
+	var colors = ["#d7191c", "#fdae61", "#ffffbf", "#a6d96a", "#1a9641"];
 
 	// add bars in an overview: this means 
 	// before you hit play we the joy count for all candies across all ages
@@ -368,12 +388,12 @@ d3.csv("candy.csv", function (csv) {
 							return colors[1];
 						} else if (candyCalculationmap.get(Math.round(age)).get(candies[i]) < spread * 3) {
 							return colors[2];
-						}  else if (candyCalculationmap.get(Math.round(age)).get(candies[i]) < maxValue) {
+						} else if (candyCalculationmap.get(Math.round(age)).get(candies[i]) < maxValue) {
 							return colors[3];
 						} else {
 							return colors[4];
 						}
-					} 
+					}
 					return colors[0];
 				})
 				.attr("x", function () {
