@@ -180,7 +180,7 @@ d3.csv("candy.csv", function (csv) {
 	var barChart = d3.select("#main")
 		.append("svg")
 		.attr("width", width * 2)
-		.attr("height", height * 8 + 100)
+		.attr("height", height * 8 + 120)
 		.attr("class", "barChart");
 	var bars = barChart.append("g");
 
@@ -189,12 +189,13 @@ d3.csv("candy.csv", function (csv) {
 		.append("svg")
 		.attr("id", "svg")
 		.attr("width", width + 600)
-		.attr("height", height + 105);
+		.attr("height", height / 3 + 105);
 
 	// create p to hold both play button and dropdown select
 	var belowGraph = d3.select("#main")
 		.append("p")
 		.style("padding-left", "2%")
+		.style("padding-bottom", "2%")
 		.attr("width", width)
 		.attr("height", height)
 
@@ -287,7 +288,7 @@ d3.csv("candy.csv", function (csv) {
 	// slider for storytelling vis - make a little person that grows over time
 	var slider = svg.append("g")
 		.attr("class", "slider")
-		.attr("transform", "translate(40, 100)");
+		.attr("transform", "translate(40, 65)");
 
 	// add an interactive line where a user can adjust slider
 	slider.append("line")
