@@ -8,6 +8,7 @@ var maxMehCount;
 var maxDespairCount;
 var colors;
 var candyText;
+var axisText;
 
 var playPressed = 0;
 
@@ -216,17 +217,28 @@ d3.csv("candy.csv", function (csv) {
 	globalAgeAgnosticMap = joyAgeAgnosticCandyMap;
 	colors = joyColors;
 	candyText = "Favorite Candies: ";
+	axisText = "Joy Count"
 
 	var minAge = d3.min(data, function (d) { return +d.AGE; });
 	var maxAge = d3.max(data, function (d) { return +d.AGE; });
 	currentValue = minAge;
+
 	// create bar chart
 	var barChart = d3.select("#main")
 		.append("svg")
 		.attr("width", width * 2)
 		.attr("height", height * 8 + 120)
-		.attr("class", "barChart");
-	var bars = barChart.append("g");
+		.attr("class", "barChart")
+
+	// axis label
+	var axisLabel = barChart.append("text")
+		.text(axisText)
+		.attr("transform", "translate(15, 260)rotate(-90)")
+		.attr("class", "axisTitle")
+
+	var bars = barChart.append("g")
+	bars.attr("transform", "translate(20, 0)")
+
 
 	// initial svg
 	var svg = d3.select("#main")
@@ -234,6 +246,8 @@ d3.csv("candy.csv", function (csv) {
 		.attr("id", "svg")
 		.attr("width", width + 700)
 		.attr("height", height / 3 + 105);
+
+
 
 	// create p to hold both play button and dropdown select
 	var belowGraph = d3.select("#main")
@@ -288,20 +302,24 @@ d3.csv("candy.csv", function (csv) {
 			globalAgeAgnosticMap = joyAgeAgnosticCandyMap;
 			colors = joyColors;
 			candyText = "Favorite Candies: ";
+			axisText = "Joy Count";
 		} else if (preference == "Meh") {
 			globalCandyMap = mehCandyMap;
 			globalCalculationMap = mehCandyCalculationMap;
 			globalAgeAgnosticMap = mehAgeAgnosticCandyMap;
 			colors = mehColors;
 			candyText = "Meh-est Candies: ";
+			axisText = "Meh Count";
 		} else {
 			globalCandyMap = despairCandyMap;
 			globalCalculationMap = despairCandyCalculationMap;
 			globalAgeAgnosticMap = despairAgeAgnosticCandyMap;
 			colors = despairColors;
 			candyText = "Least Favorite Candies: ";
+			axisText = "Despair Count";
 		}
 		if (playPressed == 0) {
+			axisLabel.text(axisText)
 			candiesDetail
 				.text(candyText)
 			for (var i = 0; i < candies.length; i++) {
@@ -450,6 +468,7 @@ d3.csv("candy.csv", function (csv) {
 		updateCandyDetailX(age);
 		var candyArr = globalCandyMap.get(Math.round(age));
 		updateCandyText(candyArr, candyText);
+		axisLabel.text(axisText);
 
 		// change y scale now that we're looking at individual ages
 		barY = d3.scaleLinear().domain([0, 105]).range([height * 8, 0]);

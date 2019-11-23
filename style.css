@@ -9,6 +9,12 @@ body {
   margin: 0;
 }
 
+.axisTitle {
+  font-family: 'SegoeUI Light';
+  font-weight: lighter;
+  font-size: 18px;
+}
+
 .dropdown {
   font-family: 'SegoeUI Light';
   font-weight: lighter;
