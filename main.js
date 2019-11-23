@@ -239,6 +239,10 @@ d3.csv("candy.csv", function (csv) {
 	var bars = barChart.append("g")
 	bars.attr("transform", "translate(20, 0)")
 
+	// define the div for the tooltip
+	var tooltip = d3.select("#main").append("div")
+		.attr("class", "tooltip")
+		.style("opacity", 0);
 
 	// initial svg
 	var svg = d3.select("#main")
@@ -246,7 +250,6 @@ d3.csv("candy.csv", function (csv) {
 		.attr("id", "svg")
 		.attr("width", width + 700)
 		.attr("height", height / 3 + 105);
-
 
 
 	// create p to hold both play button and dropdown select
@@ -335,7 +338,25 @@ d3.csv("candy.csv", function (csv) {
 					.attr("y", function () { return barY(globalAgeAgnosticMap.get(candies[i])); })
 					.attr("height", function () {
 						return (height * 8) - barY(globalAgeAgnosticMap.get(candies[i]));
-					});
+					})
+					.attr("count", globalAgeAgnosticMap.get(candies[i]));
+
+				if (globalAgeAgnosticMap.get(candies[i]) != undefined) {
+					bars.select("#bar" + i)
+						.on("mouseover", function () {
+							tooltip.transition()
+								.duration(200)
+								.style("opacity", .7)
+								.style("left", (d3.mouse(this)[0] + 40) + "px")
+								.style("top", (d3.mouse(this)[1] + 20) + "px")
+							tooltip.html("Count: " + d3.select(this).attr("count"))
+						})
+						.on("mouseout", function () {
+							tooltip.transition()
+								.duration(500)
+								.style("opacity", 0);;
+						});
+				}
 			}
 		}
 	});
@@ -370,6 +391,7 @@ d3.csv("candy.csv", function (csv) {
 			.append("rect")
 			.attr("id", "bar" + i)
 			.style("fill", function () {
+				count = globalAgeAgnosticMap.get(candies[i]);
 				return colors[Math.trunc(globalAgeAgnosticMap.get(candies[i]) / 10000 / 2)];
 			})
 			.attr("x", function () {
@@ -379,6 +401,20 @@ d3.csv("candy.csv", function (csv) {
 			.attr("y", function () { return barY(globalAgeAgnosticMap.get(candies[i])); })
 			.attr("height", function () {
 				return (height * 8) - barY(globalAgeAgnosticMap.get(candies[i]));
+			})
+			.attr("count", globalAgeAgnosticMap.get(candies[i]))
+			.on("mouseover", function () {
+				tooltip.transition()
+					.duration(200)
+					.style("opacity", .7)
+					.style("left", (d3.mouse(this)[0] + 40) + "px")
+					.style("top", (d3.mouse(this)[1] + 20) + "px")
+				tooltip.html("Count: " + d3.select(this).attr("count"))
+			})
+			.on("mouseout", function () {
+				tooltip.transition()
+					.duration(500)
+					.style("opacity", 0);;
 			});
 	}
 
@@ -520,6 +556,30 @@ d3.csv("candy.csv", function (csv) {
 						return (height * 8) - barY(globalCalculationMap.get(Math.round(age)).get(candies[i]));
 					}
 				})
+				.attr("count", function () {
+					if (globalCalculationMap.get(Math.round(age)) != undefined) {
+						return Math.round(globalCalculationMap.get(Math.round(age)).get(candies[i]));
+					} else {
+						return 0;
+					}
+				});
+
+			if (globalCalculationMap.get(Math.round(age)) != undefined) {
+				bars.select("#bar" + i)
+					.on("mouseover", function () {
+						tooltip.transition()
+							.duration(200)
+							.style("opacity", .7)
+							.style("left", (d3.mouse(this)[0] + 40) + "px")
+							.style("top", (d3.mouse(this)[1] + 20) + "px")
+						tooltip.html("Count: " + d3.select(this).attr("count"))
+					})
+					.on("mouseout", function () {
+						tooltip.transition()
+							.duration(500)
+							.style("opacity", 0);;
+					});
+			}
 		}
 	}
 

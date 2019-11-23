@@ -9,6 +9,22 @@ body {
   margin: 0;
 }
 
+.tooltip {	
+  position: absolute;			
+  text-align: center;			
+  width: 60px;					
+  height: 40px;					
+  padding: 2px;				
+  font-size: 14px;
+  font-family: 'SegoeUI Light';
+	
+  background: #4d4d4d;	
+  color: white;
+  border: 0px;		
+  border-radius: 8px;			
+  pointer-events: none;			
+}
+
 .axisTitle {
   font-family: 'SegoeUI Light';
   font-weight: lighter;
@@ -18,7 +34,6 @@ body {
 .dropdown {
   font-family: 'SegoeUI Light';
   font-weight: lighter;
-  font-size: 14px;
   border-radius: 3px;
   height: 30px;
 }
